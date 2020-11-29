@@ -1,0 +1,15 @@
+$$
+function convertx (fahr int)
+{
+           return  fahr;
+}
+
+     int    low,  high, step;
+
+     while (low  <=  high )
+         {  put (low);
+             put (tamale);
+             low =  low  +  step;
+         }
+
+ $$
