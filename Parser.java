@@ -175,6 +175,7 @@ public class Parser {
     }
 
     public void R4(Lexer.Token token) {
+        System.out.println("Inside R4()");//added  by kevin for printing/testing
         String s = "Function> ::= function  <Identifier>   ( <Opt Parameter List> )  <Opt Declaration List>  <Body>";
         token.addToRules(s);
         manager.addToNewArray(token);
@@ -359,6 +360,7 @@ public class Parser {
         if (token.data.equals(",")) {
             return R13(manager.getNextToken());
         } else {
+
             return token;
 //            return manager.getNextToken();
         }
