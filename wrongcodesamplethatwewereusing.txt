@@ -1,0 +1,17 @@
+$$
+    int      i, max, sum;
+    sum = 0;
+    i = 1;
+    get ( max);
+    if (i <  max){
+          sum = sum + i;
+          i  = i + 1;
+	}
+else{
+	sum = 8;
+	sum =10;
+}
+    if
+     put (sum + max);
+$$
+

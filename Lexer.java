@@ -46,19 +46,19 @@ public class Lexer {
                 tokens.add(new Token(TokenType.OPERATOR, matcher.group(TokenType.OPERATOR.name()), line));
             }
         }
-//        int number = 0;
-//        for (Token t : tokens) {
-//
-//            System.out.println("Index: " + number + " " + t.toString());
-//            number++;
-//        }
-//        System.out.println("Array Size: " + tokens.size());
+        int number = 0;
+        for (Token t : tokens) {
+
+            System.out.println("Index: " + number + " " + t.toString());
+            number++;
+        }
+        System.out.println("Array Size: " + tokens.size());
     }
 
 
     public enum TokenType {
         NUMBER("\\s[+-]?([0-9]*[.])?[0-9]+"),
-        OPERATOR("(\\*|\\/|\\+|-|=|\\>|<=|>=|<)"),
+        OPERATOR("(\\*|\\/|\\+|-|=|\\>|<=|>=|<|!=)"),
         WHITESPACE("[ \t\f\r\n]+"),
         KEYWORD("(?<![a-zA-Z0-9])(if|while|int|get|for|function|print|Boolean|real|fi|true|false|float|put|return)(?![a-zA-Z0-9])"),
         IDENTIFIER("\\b(?!(if|while|int|float|return|get|for|function|print)\\b)\\w+"),

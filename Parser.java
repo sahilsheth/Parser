@@ -107,22 +107,26 @@ public class Parser {
         return new LinkedList<>(aL);
     }
 
+    //
+    //R1() needs to first check for a function declaration THEN after we check for function declarations we must check for
+    // the dollar signs $$
+    //
     public void R1() {
         String s = "Rat20F>  ::=   <Opt Function Definitions>   $$  <Opt Declaration List>  <Statement List>  $$";
         System.out.println(s);
 //        manager.currentIndex = 0;
-        Lexer.Token token = manager.getCurrentToken();
+        Lexer.Token token = manager.getCurrentToken(); // we are gettubg tge very first token which should be  KEYWORD: function
 //        System.out.println("TOKEN: " + token.toString());
         token = R2(token);
-        if (!token.data.equals("$$")) {
-            printError(token, "$$");
-        }
+//        if (!token.data.equals("$$")) {
+//            printError(token, "$$");
+//        }
 
-        token = R10(token);
-        token = R14(token);
-        if (!token.data.equals("$$")) {
-            printError(token, "$$");
-        }
+        //token = R10(token);
+        //token = R14(token);
+//        if (!token.data.equals("$$")) {
+//            printError(token, "$$");
+//        }
         token.addToRules(s);
         manager.addToNewArray(token);
         token = R2(token);
@@ -211,9 +215,9 @@ public class Parser {
         token = manager.getNextToken();
         token.addToRules(s);
         manager.addToNewArray(token);
-        manager.tempNextToken(-1);
-        manager.tempNextToken(0);
-        manager.tempNextToken(1);
+//        manager.tempNextToken(-1);
+//        manager.tempNextToken(0);
+//        manager.tempNextToken(1);
 
 
         if (token.type != Lexer.TokenType.IDENTIFIER) {
@@ -337,7 +341,8 @@ public class Parser {
         System.out.println(s);
         if (!(token.type.equals(Lexer.TokenType.IDENTIFIER))) {
             printError(token, "identifier");
-            manager.tempNextToken(-1);
+//            manager.tempNextToken(-1);
+//            manager.tempNextToken(-2);
         }
         token = R13Empty(token);
         manager.addToNewArray(token);

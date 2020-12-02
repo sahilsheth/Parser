@@ -46,10 +46,14 @@ public class Main {
             e.printStackTrace();
         }
 
+        System.out.println("INSIDE MAIN");
         String input = String.valueOf(fileContents);
+        System.out.println(input);
         input.replaceAll("\\s", "");
         //remove all the comments
+        System.out.println("After removing comments");
         input = input.replaceAll("(?s:/\\*.*?\\*/)|//.*", "");
+        System.out.println(input);
         Lexer lex = new Lexer(input);
         ArrayList<Lexer.Token> tokens = Lexer.lexFunc(input);
         Parser parser = new Parser(tokens, o);
