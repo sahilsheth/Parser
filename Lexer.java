@@ -60,8 +60,8 @@ public class Lexer {
         NUMBER("\\s[+-]?([0-9]*[.])?[0-9]+"),
         OPERATOR("(\\*|\\/|\\+|-|=|\\>|<=|>=|<|!=)"),
         WHITESPACE("[ \t\f\r\n]+"),
-        KEYWORD("(?<![a-zA-Z0-9])(if|while|int|get|for|function|print|Boolean|real|fi|true|false|float|put|return)(?![a-zA-Z0-9])"),
-        IDENTIFIER("\\b(?!(if|while|int|float|return|get|for|function|print)\\b)\\w+"),
+        KEYWORD("(?<![a-zA-Z0-9])(if|while|int|get|for|function|print|boolean|real|fi|true|false|float|put|return)(?![a-zA-Z0-9])"),
+        IDENTIFIER("\\b(?!(if|while|int|get|for|function|print|boolean|real|fi|true|false|float|put|return)\\b)\\w+"),
         SEPARATOR("[\\$]{2,2}|[^\\sa-zA-Z0-9\\\\ds:\\=\\>\\<]"); //newest one avoids >= and <=
         public final String pattern;
         TokenType(String pattern) {

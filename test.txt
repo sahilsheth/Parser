@@ -6,13 +6,13 @@ function convert (fahr int)
 }
 
 function convertx (x real, y boolean)
-{
 boolean  k, z;
 real     x;
-    if (x > y) 
+{
+    if (x > y)
        x = false;
     fi
-    if ( y  != z) 
+    if ( y  != z)
        x = true;
     else y = 123.45;
     fi
@@ -27,8 +27,8 @@ $$
      while (low  <=  high)
         {  put (convertx(low) );
            low = low + step;
-        } 
-      
+        }
+
 $$
 
 
