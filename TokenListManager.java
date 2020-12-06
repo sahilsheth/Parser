@@ -13,12 +13,15 @@ public class TokenListManager {
         tokens = new ArrayList<>();
         newTokens = new ArrayList<>();
         for (int i = 0; i < tk.toArray().length; ++i) {
+            tk.get(i).giveIndexNumber(i);
             tokens.add(tk.get(i));
         }
         System.out.println(tokens.toString());
         System.setOut(o);
 
     }
+
+
 
 
     public Lexer.Token getCurrentToken() {
@@ -29,13 +32,14 @@ public class TokenListManager {
     public void tempNextToken(int amount) {
         System.out.println("the token " + amount + " away from it is: ");
         int lol = currentIndex;
-        System.out.println(tokens.get(lol + (amount)).toString());
+        System.out.print(tokens.get(lol + (amount)).toStringNew() + "\n");
     }
 
     public Lexer.Token getNextToken() {
 
         if (currentIndex > tokens.size() + 1) {
             isFinished = true;
+            currentIndex--;
         }
         currentIndex++;
         return tokens.get(this.currentIndex);

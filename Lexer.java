@@ -5,9 +5,12 @@ import java.util.regex.Pattern;
 public class Lexer {
     String input;
 
+
     public Lexer(String input) {
         this.input = input;
     }
+
+
 
 
     public static ArrayList<Token> lexFunc(String input) {
@@ -49,7 +52,7 @@ public class Lexer {
         int number = 0;
         for (Token t : tokens) {
 
-            System.out.println("Index: " + number + " " + t.toString());
+            System.out.println("Index: " + number + " " + t.toStringNew());
             number++;
         }
         System.out.println("Array Size: " + tokens.size());
@@ -57,7 +60,8 @@ public class Lexer {
 
 
     public enum TokenType {
-        NUMBER("\\s[+-]?([0-9]*[.])?[0-9]+"),
+//        NUMBER("\\s[+-]?([0-9]*[.])?[0-9]+"), //original commentedd out by kevin 12/5
+        NUMBER("[+-]?([0-9]*[.])?[0-9]+"),
         OPERATOR("(\\*|\\/|\\+|-|=|\\>|<=|>=|<|!=)"),
         WHITESPACE("[ \t\f\r\n]+"),
         KEYWORD("(?<![a-zA-Z0-9])(if|while|int|get|for|function|print|boolean|real|fi|true|false|float|put|return)(?![a-zA-Z0-9])"),
@@ -73,6 +77,7 @@ public class Lexer {
         public TokenType type;
         public String data;
         public int lineNumber;
+        public int indexNumber;
         public ArrayList<String> PRules;
 
         public Token(TokenType type, String data, int lineNumber) {
@@ -100,15 +105,23 @@ public class Lexer {
 
         @Override
         public String toString() {
-            return type.name() + " " + data;
+            return type.name() + " " + data + " at index: " + this.indexNumber;
+
         }
 
+        public String toStringNew() {
+            return type.name() + " " + data;
+        }
         public void printRules() {
             System.out.println("--=RULES=--");
             for (String s : PRules) {
                 System.out.println(s);
             }
             System.out.println("--==END==--");
+        }
+
+        public void giveIndexNumber(int number){
+            this.indexNumber = number;
         }
 
     }

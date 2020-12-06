@@ -74,7 +74,6 @@ Note: <Identifier>, <Integer>, <Real> are token types as defined in section (1) 
  */
 
 
-
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -82,6 +81,8 @@ import java.util.List;
 
 
 public class Parser {
+    public boolean allowedToPrint = false;
+//    public boolean allowedToPrint = true;
 
     public static ArrayList<Lexer.Token> tokenArrayList;
     public TokenListManager manager;
@@ -93,7 +94,6 @@ public class Parser {
     public Parser(ArrayList<Lexer.Token> tokens, PrintStream o) {
         manager = new TokenListManager(tokens, o);
         this.o = o;
-        PrintStream console = System.out;
         System.setOut(o);
         tokenArrayList = tokens;
         tokensLinkedList = convertALtoLL(tokenArrayList);
@@ -138,9 +138,10 @@ public class Parser {
         }
 
 
-        manager.printTokens();
+//        manager.printTokens();
 
     }
+
 
     public Lexer.Token R2(Lexer.Token token) {
         String s = "Opt Function Definitions> ::= <Function Definitions>     |  <Empty>";
@@ -150,8 +151,13 @@ public class Parser {
         token.addToRules(s);
         manager.addToNewArray(token);
 
+        if(token.data.equals("function"))
+        {
+            token = manager.getNextToken(); //added by kevin (testing)
+//            R3(token); //commented out by Kevin (went from 39 errors to 21 after commenting out)
+        }
 
-        if (!(token.data.equals("function"))) {
+        else if (!(token.data.equals("function"))) {
             return manager.getCurrentToken();
         }
 
@@ -159,12 +165,17 @@ public class Parser {
         return R3(token);
     }
 
+//    public void R3(Lexer.Token token){ <-- for testing by Sahil
     public Lexer.Token R3(Lexer.Token token) {
 
         String s = "<Function Definitions>  ::= <Function> | <Function> <Function Definitions>   ";
         updateAndPrint(token, s);
 
-
+        /*//12/1: Sahil tried calling R4 when it encounters function but stuff kept printing function def
+        if(token.data.equals("function"))
+        {
+            R4(token);
+        }*/
         R4(token);
         return R4EMPTY(token);
     }
@@ -187,6 +198,33 @@ public class Parser {
         }
         token = R10(token);
         R9(token);
+
+
+        //CODE FOR TESTING DOWN HERE
+
+//
+//        System.out.println("token is: " + token.toString()); //added by kevin for testing (remove if u want)
+//
+//        //just trying something out here - Sahil
+//        if (token.type.equals(Lexer.TokenType.IDENTIFIER))
+//        {
+//            System.out.println("token is: " + token.toString()); //added by kevin for testing (remove if u want)
+//            token = manager.getNextToken();
+//            if(token.data.equals("("))
+//            {
+//                token = manager.getNextToken();
+//                R5(token);
+//                if(token.data.equals(")"))
+//                {
+//                    token = manager.getNextToken();
+//                    R10(token);
+//                    R9(token);
+//                }
+//            }
+//        }
+
+        //END OF CODE FOR TESTING
+
     }
 
     public Lexer.Token R4EMPTY(Lexer.Token token) {
@@ -197,6 +235,7 @@ public class Parser {
             return token;
         } else {
             return R3(token);
+            //R3(token); //Sahil
         }
     }
 
@@ -228,7 +267,7 @@ public class Parser {
     }
 
     public void R7(Lexer.Token token) {
-        String s = "Parameter> ::=  <IDs >  <Qualifier> ";
+        String s = "<Parameter> ::=  <IDs >  <Qualifier> ";
         updateAndPrint(token, s);
         token = R13(token);
         R8(token);
@@ -256,6 +295,7 @@ public class Parser {
             printError(token, "{");
         }
         // we start off here, our current token is " { "
+        s("currently in r9, curernt index: "+ manager.currentIndex);
         token = manager.getNextToken(); // now the token is "return"
         token = R14(token); //we are going ro r13
         if (!token.data.equals("}")) {
@@ -333,7 +373,8 @@ public class Parser {
     }
 
     private void printError(Lexer.Token token, String error) {
-        System.out.println("Error at line number " + token.lineNumber + ": expected " + error + " but got " + token.data);
+//        System.out.println("Error at line number " + token.lineNumber + ": expected " + error + " but got " + token.data);
+        System.out.println("Error: expected " + error + " but got " + token.data);
     }
 
     public Lexer.Token R14(Lexer.Token token) {
@@ -347,6 +388,7 @@ public class Parser {
     private Lexer.Token R14Empty(Lexer.Token token) {
         String s = "<Statement List> ::= <Statement List>  |  <Empty>";
         updateAndPrint(token, s);
+        System.out.println("inside r14empty, current token: "+manager.getCurrentToken());
         if (token.data.equals("{") || token.type.equals(Lexer.TokenType.IDENTIFIER)
                 || token.data.equals("if") || token.data.equals("return")
                 || token.data.equals("put") || token.data.equals("get") || token.data.equals("while")) {
@@ -359,22 +401,33 @@ public class Parser {
     public void R15(Lexer.Token token) {
         String s = "<Statement> ::=   <Compound>  |  <Assign>  |   <If>  |  <Return>   | <Print>   |   <Scan>   |  <While> ";
         updateAndPrint(token, s);
+        System.out.println("Current Token in r17: " + manager.getCurrentToken());
         if (token.data.equals("{")) { //<--- tbh that seems redundant now lmao
+            System.out.println("r16 detected, token: "+token.toString());
             R16(token);
         } else if (token.type == Lexer.TokenType.IDENTIFIER) {
+            System.out.println(" r17 detected, token: " + token.toString());
             R17(token);
         } else if (token.data.equals("if")) {
+            System.out.println("r18 detected, token: " + token.toString());
             R18(token);
         } else if (token.data.equals("return")) {    //this is the condition that will be triggered
+            System.out.println("r19 detected, token: " + token.toString());
             R19(token);          //now lets hop to r19
         } else if (token.data.equals("put")) {
+            System.out.println("r20 detected, token: " + token.toString());
             R20(token);
         } else if (token.data.equals("get")) {
+            System.out.println("r21 detected, token: " + token.toString());
             R21(token);
         } else if (token.data.equals("while")) {
+            System.out.println("r22 detected, token: " + token.toString());
             R22(token);
+        } else if (token.type == Lexer.TokenType.KEYWORD) {
+//            System.out.println("else if detected, token: " + token.toString());
+//            R17(token);
         } else {
-            System.out.println("The error is being printed from r15");
+            System.out.println("This error is being printed from r15");
             manager.tempNextToken(-1);
             printError(token, "keyword or an identifier");
             manager.tempNextToken(1);
@@ -404,6 +457,7 @@ public class Parser {
             printError(token, "=");
             manager.tempNextToken(1);
         }
+//        token = R25(manager.getNextToken()); //oroginal commened by kevin 11/5
         token = R25(manager.getNextToken());
         manager.addToNewArray(token);
         if (!token.data.equals(";")) {
@@ -444,7 +498,7 @@ public class Parser {
 //
         updateAndPrint(token,s);
         if (token.data.equals("fi")) {
-//            R18FI(manager.getNextToken());
+            R18FI(manager.getNextToken());
         } else if (token.data.equals("else")) {
             R15(manager.getNextToken());
             compareLexemes("fi");
@@ -468,8 +522,8 @@ public class Parser {
          //we just had the token "return" so we get the next one
 
         if(!compareLexemes(";Benis")){ // it is not " return ;  then it is an expression
-            token = manager.getNextToken();// now our token is  " 5 "
-            token = R25(token);
+//            token = manager.getNextToken();// now our token is  " 5 "
+            token = R25(manager.getNextToken());
             //when we compare we see that the next token after "return" is  " 5 "
             // now lets hop into r25 since it is NOT " ; "
         }
@@ -485,20 +539,27 @@ public class Parser {
         token = manager.getNextToken();
         token.addToRules(s);
         manager.addToNewArray(token);
-        if (token.data.equals(";test")) {
+        if (token.data.equals(";"))
+        {
             return;
        }
-        //else {
-//            token = R25(token);
-//            manager.addToNewArray(token);
-//        }
-        System.out.println("printing from r19semicolon");
+        else {
+            token = R25(token);
+            manager.addToNewArray(token);
+            if (!token.data.equals(";"))
+            {
+                System.out.println("printing from r19semicolon");
+                manager.tempNextToken(-1);
+
+                printError(token, ";esketit");
+                token = R25(manager.getNextToken());
+                manager.tempNextToken(0);
+                manager.tempNextToken(1);
+                manager.addToNewArray(token);
+            }
+        }
 
 
-
-        printError(token, ";esketit");
-        token = R25(token);
-        manager.addToNewArray(token);
     }
 
     public void R20(Lexer.Token token) {
@@ -565,7 +626,8 @@ public class Parser {
         token = R25(manager.getNextToken());
         manager.addToNewArray(token);
         token = R24(token);
-        return R25(token);
+//        return R25(manager.getNextToken()); //commented out by kevin on 12/5
+        return R25(token); //added by kevin 12/5 <--- no difference ?
     }
 
     public Lexer.Token R24(Lexer.Token token) {
@@ -588,11 +650,11 @@ public class Parser {
         String s = "<Expression>  ::=    <Expression> + <Term>    | <Expression>  - <Term>    |    <Term>";
         updateAndPrint(token, s);
         //our token is 5, so we should get the next token to see if it is a + or a -
-        token = manager.getNextToken();
+//        token = manager.getNextToken(); //now it is -32
 
-        if (token.data.equals("+") || token.data.equals("-") )
+        if ((token.data.contains("+")) || (token.data.contains("-")) )
         {
-            token = manager.getNextToken();
+//            token = manager.getNextToken();
             token = R26TERM(token);
             manager.addToNewArray(token);
             return R25EMPTY(token);
@@ -606,7 +668,8 @@ public class Parser {
 //        }
         else { //if it is not + or - then it is * or / so call r26
             System.out.println("ELSE STATEMENT BECAUSE IT WAS NOT + OR -");
-            token = R26(token);    //token went from 5 to *, now pass that into r26
+            System.out.println("calling r26 from r25, index: "+manager.currentIndex);
+            token = R26(token);
         }
 
 
@@ -624,8 +687,9 @@ public class Parser {
         String s = "<Expression> ::= + <Term> <Expression> | - <Term> <Expression> | <Empty>";
         updateAndPrint(token, s);
         //mayube add this? || token.data.equals("*") ||token.data.equals("/")
-        if (token.data.equals("+") || token.data.equals("-")  ) {
+        if (token.data.equals("+") || token.data.equals("-")) {
             token = manager.getNextToken();
+            s("calling r26term, index is: "+ manager.currentIndex);
             token = R26TERM(token);
             manager.addToNewArray(token);
             return R25EMPTY(token);
@@ -638,14 +702,19 @@ public class Parser {
     public Lexer.Token R26(Lexer.Token token) {
         String s = "<Term>    ::=      <Term>  *  <Factor>     |   <Term>  /  <Factor>     |     <EMPTY>";
         updateAndPrint(token, s);
-
+        s("inside r26, current index: " + manager.currentIndex);
         //current token is *
         if (token.data.equals("*") || token.data.equals("/")) {
             System.out.println("IT WAS NOT A + OR A -");
+            System.out.println("calling r17 and our current index is: "+ manager.currentIndex);
+
             token = R27(manager.getNextToken()); //since we had a * or a /, our next token is a factor of it
+            System.out.println("out of r27 index: " + manager.currentIndex);
             manager.addToNewArray(token);     //im going to run it and see
+            System.out.println("call r26 index: " + manager.currentIndex);
             return R26(token);
         } else {
+            System.out.println("inside else in r26 and index is: "+ manager.currentIndex);
             return token;
         }
     }
@@ -653,7 +722,9 @@ public class Parser {
     public Lexer.Token R26TERM(Lexer.Token token) {
         String s = "<Term>    ::=      <Term>  *  <Factor>";
         updateAndPrint(token, s);
+        System.out.println("inside r26term, call r27, index: "+ manager.currentIndex);
         token = R27(token);
+        System.out.println("called r27, index: "+ manager.currentIndex);
         manager.addToNewArray(token);
         return R26(token);
     }
@@ -661,6 +732,7 @@ public class Parser {
     public Lexer.Token R27(Lexer.Token token) {
         String s = "<Factor> ::=      -  <Primary>    |    <Primary>"; //it ccan be positive or negatiev
         updateAndPrint(token, s);
+        System.out.println("inside r27, index: "+ manager.currentIndex);
         //we just passed in the next token which is " ( " , we can just go the next function from here
         R28(token);//we did not go to the next token because r28 checks the current token
         //check for a PRIMARY
@@ -682,6 +754,7 @@ public class Parser {
 //            token = R28(manager.getNextToken()); //ADDED BY KEVIN FOR TESTING
 //            //12/3 the above line helped us go from 16 errors to 8. I wondered why we
 //        }
+        System.out.println("out of r28, index is: "+ manager.currentIndex);
         manager.addToNewArray(token);
         return token;
     }
@@ -701,41 +774,40 @@ public class Parser {
 //                R13(token);
 //            }
         }
-        else if (token.data.equals("("))
+        else if (token.data.equals("(")) // (
         {
             System.out.println("R28 PARENTHESIS LOLOOL");
+            System.out.println("our index:" +  manager.currentIndex);
             token = R25(manager.getNextToken()); // goes from ( to fahr, passes fahr to r25
 //            token = R13(manager.getNextToken()); // goes from ( to fahr, passes fahr to r25
             //what do we do here
+            System.out.println("after calling r25 our index is: " + manager.currentIndex);
             manager.addToNewArray(token);
             if (!token.data.equals(")"))
             {
-                System.out.println("r28 elif");
-                manager.tempNextToken(-1);
-                printError(token, ")");
-                manager.tempNextToken(-1);
+//                System.out.println("r28 elif");
+//                manager.tempNextToken(-1);
+//                printError(token, ")");
+//                manager.tempNextToken(-1);
             }
             else
                 {
 //                return token;
+                    System.out.println("index: "+ manager.currentIndex);
                 return manager.getNextToken();
                 }
         }
-        else if (
-
-                token.data.equals("int")
-                        || token.data.equals("real")
-                        || token.data.equals("true")
-                        || token.data.equals("false")
-                        || token.type == Lexer.TokenType.NUMBER)
+        else if (token.data.equals("real") || token.data.equals("true") || token.data.equals("false")  || token.type == Lexer.TokenType.NUMBER)
         {
+            System.out.println("inside elif and index is: " + manager.currentIndex);
             token = manager.getNextToken();
             token.addToRules(s);
             manager.addToNewArray(token);
         }
         else
             {
-            System.out.println("THE ERROR IS IN R28");
+                System.out.println("inside ELSE and index is: " + manager.currentIndex);
+                System.out.println("THE ERROR IS IN R28");
             manager.tempNextToken(-1);
             printError(token, "NUMBER");
             manager.tempNextToken(1);
@@ -774,7 +846,15 @@ public class Parser {
     private void updateAndPrint(Lexer.Token token, String s) {
         token.addToRules(s);
         manager.addToNewArray(token);
-        System.out.println(s);
+        if(allowedToPrint){
+            System.out.println(s);
+        }
+
+        System.out.println("The Token is: " + token.toString());
     }
 
+
+    public void s(String lol){
+        System.out.println(lol);
+    }
 }
